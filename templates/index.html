@@ -1,0 +1,6 @@
+<script src="https://unpkg.com/htmx.org@1.9.11"></script>
+<form name = "user_form" hx-post = "/recipes" hx-target="#recipes">
+  <input name="user" type="text" placeholder="your username">
+  <button type="submit">GET RECIPIES</button>
+</form>
+<div id = "recipes"></div>
