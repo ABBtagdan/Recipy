@@ -1,6 +1,14 @@
 <script src="https://unpkg.com/htmx.org@1.9.11"></script>
-<form name = "user_form" hx-post = "/recipes" hx-target="#recipes">
-  <input name="user" type="text" placeholder="your username">
-  <button type="submit">GET RECIPIES</button>
+
+
+<input name="user" type="text" placeholder="your username" id="username">
+<input name="filter" type="text" />
+<button hx-get="/filter_card" hx-target="#filters" hx-include="previous input" hx-swap="beforeend">Add Filter</button>
+<br>
+<form id = "filter_form" hx-get = "/recipes" hx-target="#recipes" hx-include="#username" >
+<ul name = "filters" id = "filters">
+</ul>
+<button type="submit">GET RECIPIES</button>
 </form>
 <div id = "recipes"></div>
+

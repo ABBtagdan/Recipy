@@ -1,0 +1,6 @@
+<!doctype html>
+<ul id = "recipes">
+{% for recipe in recipes%}
+  <li><a href="/">{{recipe.title}}</a><img style="width:100px; height:100px" src="{{recipe.image_url}}"/></li>
+{% endfor %}
+</ul>
