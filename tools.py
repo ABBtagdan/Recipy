@@ -17,6 +17,10 @@ def add_user(user_values: tuple):
     cur.close()
     con.close()
 
+
+def add_recipe(recipe_values: tuple):
+    pass 
+
 def filter(recipes:list, ingredients:list):
 
     filtered_recipes = []
