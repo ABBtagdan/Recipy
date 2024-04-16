@@ -2,14 +2,20 @@ import data_loader
 import sqlite3
 
 
-def database_cursor():
-    con = sqlite3.connect("recipy.db")
-    return con.cursor()
+def database_connection():
+    return sqlite3.connect("recipy.db")
     
 
-def add_user(user_values: dict):
-    
-    
+def add_user(user_values: tuple):
+    con = database_connection()
+    cur = con.cursor();
+    command = """ INSERT INTO users 
+    (username, real_name, image, description, password) 
+    VALUES (?, ?, ?, ?, ?)"""
+    cur.execute(command, user_values)
+    con.commit()
+    cur.close()
+    con.close()
 
 def filter(recipes:list, ingredients:list):
 
@@ -41,3 +47,14 @@ def filter(recipes:list, ingredients:list):
 
 def sort():
     pass
+
+if __name__ == "__main__":
+    print("tests!")
+    func = input("input function to test: ")
+    if func == "add_user":
+        username = input("username: ")
+        real_name = input("real_name: ")
+        image = open(input("image (filepath): "), 'rb').read()
+        description = input("description: ")
+        password = input('password: ')
+        add_user((username, real_name, image, description, password))
