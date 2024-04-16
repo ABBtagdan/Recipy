@@ -1,4 +1,15 @@
 import data_loader
+import sqlite3
+
+
+def database_cursor():
+    con = sqlite3.connect("recipy.db")
+    return con.cursor()
+    
+
+def add_user(user_values: dict):
+    
+    
 
 def filter(recipes:list, ingredients:list):
 
