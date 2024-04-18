@@ -57,6 +57,16 @@ def get_user(username:str):
 
     return user_data
 
+def get_user_recipes(username):
+
+    con = database_connection()
+    cur = con.cursor()
+    recipes = cur.execute(f"SELECT * FROM recipes WHERE owner='{username}'").fetchall()
+    cur.close()
+    con.close()
+
+    return recipes
+
 if __name__ == "__main__":
     print("tests!")
     func = input("input function to test: ")
@@ -71,3 +81,6 @@ if __name__ == "__main__":
     
     if func == 'get_user':
         print(get_user(input('username: ')))
+
+    if func == 'get_user_recipes':
+        print(get_user_recipes(input('username: ')))
