@@ -15,6 +15,9 @@ def index():
 def create_user():
     if request.method == "GET":
         return render_template("new_user_form.html")
+    elif request.method == "POST":
+        print(request.args, request.files, request.form)
+        return "<p>Succesfully added user</p><a href = '/'>Return to home</a>"
 
 
 @app.route("/recipes/", methods=["GET"])
@@ -25,7 +28,7 @@ def get_recipies():
     return render_template("recipes.html", recipes=x)
 
 
-@app.route("/filter_card", methods=["GET", "DELETE"])
+@app.route("/filter_card/", methods=["GET", "DELETE"])
 def filter_card():
     if request.method == "GET":
         filter: str = request.args["filter"]

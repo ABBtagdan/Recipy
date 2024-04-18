@@ -31,16 +31,16 @@ def add_recipe(recipe_values: tuple):
     Function for adding recipe
 
     recipe_values is a tuple with the following values:
-    (title: String, owner: String, time: int, ingredients: String (json), amount: String (json), unit: String (json), image: blob, tags: String (json), description: String, id: String (uuid))
+    (title: String, owner: String, time: int, ingredients: String (json), amount: String (json), unit: String (json), image: blob, tags: String (json), description: String, id: String (uuid), date: date)
     """
     con = database_connection()
     cur = con.cursor()
     if get_user(recipe_values[1]) is None:
         return None
     command = """ INSERT INTO recipes 
-    (title, owner, time, ingredients, amount, unit, image, tags, description, id)
+    (title, owner, time, ingredients, amount, unit, image, tags, description, id, date)
     VALUES
-    (?,?,?,?,?,?,?,?,?,?)"""
+    (?,?,?,?,?,?,?,?,?,?, ?)"""
     cur.execute(command, recipe_values)
     con.commit()
     cur.close()
@@ -81,12 +81,12 @@ if __name__ == "__main__":
         description = input("description: ")
         password = input("password: ")
         add_user((username, real_name, image, description, password))
-    
-    if func == 'get_user':
-        print(get_user(input('username: ')))
 
-    if func == 'get_user_recipes':
-        print([item[0] for item in get_user_recipes(input('username: '))])
+    if func == "get_user":
+        print(get_user(input("username: ")))
+
+    if func == "get_user_recipes":
+        print([item[0] for item in get_user_recipes(input("username: "))])
 
     if func == "add_recipe":
         title = input("title: ")
