@@ -7,6 +7,12 @@ def database_connection():
 
 
 def add_user(user_values: tuple):
+    """
+    Function to add user
+
+    user_values is a tuple of type:
+    (username: String, real_name: String, image: blob, description: String, password: String (hash))
+    """
     con = database_connection()
     cur = con.cursor()
     if get_user(user_values[0]) is not None:
@@ -21,6 +27,12 @@ def add_user(user_values: tuple):
 
 
 def add_recipe(recipe_values: tuple):
+    """
+    Function for adding recipe
+
+    recipe_values is a tuple with the following values:
+    (title: String, owner: String, time: int, ingredients: String (json), amount: String (json), unit: String (json), image: blob, tags: String (json), description: String, id: String (uuid))
+    """
     con = database_connection()
     cur = con.cursor()
     if get_user(recipe_values[1]) is None:
