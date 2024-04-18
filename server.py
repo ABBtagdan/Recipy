@@ -10,6 +10,7 @@ def index():
     return render_template("index.html")
 
 
+
 @app.route("/recipes/", methods=['GET'])
 def get_recipies():
     x = data_loader.load("./recipes/"+request.args['user']+".json")

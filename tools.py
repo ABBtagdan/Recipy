@@ -1,13 +1,15 @@
-import data_loader
+import uuid
 import sqlite3
+
 
 def database_connection():
     return sqlite3.connect("recipy.db")
 
+
 def add_user(user_values: tuple):
     con = database_connection()
     cur = con.cursor()
-    if get_user(user_values[0]) != None:
+    if get_user(user_values[0]) is not None:
         return None
     command = """ INSERT INTO users 
     (username, real_name, image, description, password) 
@@ -16,6 +18,22 @@ def add_user(user_values: tuple):
     con.commit()
     cur.close()
     con.close()
+
+
+def add_recipe(recipe_values: tuple):
+    con = database_connection()
+    cur = con.cursor()
+    if get_user(recipe_values[1]) is None:
+        return None
+    command = """ INSERT INTO recipes 
+    (title, owner, time, ingredients, amount, unit, image, tags, description, id)
+    VALUES
+    (?,?,?,?,?,?,?,?,?,?)"""
+    cur.execute(command, recipe_values)
+    con.commit()
+    cur.close()
+    con.close()
+
 
 # def filter(recipes:list, ingredients:list):
 
@@ -46,7 +64,7 @@ def add_user(user_values: tuple):
 # print([item['title'] for item in filter(data_loader.load('./recipes/test.json'), ['eggs'])]) # output ['American Pancakes', 'Spaghetti Carbonara']
 
 
-def get_user(username:str):
+def get_user(username: str):
 
     con = database_connection()
     cur = con.cursor()
@@ -57,6 +75,7 @@ def get_user(username:str):
 
     return user_data
 
+<<<<<<< HEAD
 def get_user_recipes(username):
 
     con = database_connection()
@@ -66,21 +85,55 @@ def get_user_recipes(username):
     con.close()
 
     return recipes
+=======
+>>>>>>> 45c4554dacb9395bb067cf4a15555f7036266b49
 
 if __name__ == "__main__":
     print("tests!")
     func = input("input function to test: ")
-    
+
     if func == "add_user":
         username = input("username: ")
         real_name = input("real_name: ")
-        image = open(input("image (filepath): "), 'rb').read()
+        image = open(input("image (filepath): "), "rb").read()
         description = input("description: ")
-        password = input('password: ')
+        password = input("password: ")
         add_user((username, real_name, image, description, password))
+<<<<<<< HEAD
     
     if func == 'get_user':
         print(get_user(input('username: ')))
 
     if func == 'get_user_recipes':
         print(get_user_recipes(input('username: ')))
+=======
+
+    if func == "get_user":
+        print(get_user(input("username: ")))
+
+    if func == "add_recipe":
+        title = input("title: ")
+        owner = input("owner: ")
+        time = int(input("time: "))
+        ingredients = input("ingredients: ")
+        amount = input("amount: ")
+        unit = input("unit: ")
+        image = open(input("image (filepath): "), "rb").read()
+        tags = input("tags: ")
+        description = input("description: ")
+        id = str(uuid.uuid4())
+        add_recipe(
+            (
+                title,
+                owner,
+                time,
+                ingredients,
+                amount,
+                unit,
+                image,
+                tags,
+                description,
+                id,
+            )
+        )
+>>>>>>> 45c4554dacb9395bb067cf4a15555f7036266b49
