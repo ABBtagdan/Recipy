@@ -47,35 +47,6 @@ def add_recipe(recipe_values: tuple):
     con.close()
 
 
-# def filter(recipes:list, ingredients:list):
-
-#     filtered_recipes = []
-
-#     for recipe in recipes:
-
-#         valid = True
-#         for needed_ingredient in ingredients:
-
-#             if valid == True:
-
-#                 valid = False
-#                 for ingredient in recipe['ingredients']:
-#                     if ingredient[0] == needed_ingredient:
-#                         valid = True
-#                         break
-
-#                 continue
-#             break
-
-#         if valid:
-#             filtered_recipes.append(recipe)
-
-#     return filtered_recipes
-
-# TESTING FILTER
-# print([item['title'] for item in filter(data_loader.load('./recipes/test.json'), ['eggs'])]) # output ['American Pancakes', 'Spaghetti Carbonara']
-
-
 def get_user(username: str):
 
     con = database_connection()
@@ -86,6 +57,17 @@ def get_user(username: str):
     con.close()
 
     return user_data
+
+
+def get_user_recipes(username):
+
+    con = database_connection()
+    cur = con.cursor()
+    recipes = cur.execute(f"SELECT * FROM recipes WHERE owner='{username}'").fetchall()
+    cur.close()
+    con.close()
+
+    return recipes
 
 
 if __name__ == "__main__":
@@ -99,9 +81,12 @@ if __name__ == "__main__":
         description = input("description: ")
         password = input("password: ")
         add_user((username, real_name, image, description, password))
+    
+    if func == 'get_user':
+        print(get_user(input('username: ')))
 
-    if func == "get_user":
-        print(get_user(input("username: ")))
+    if func == 'get_user_recipes':
+        print([item[0] for item in get_user_recipes(input('username: '))])
 
     if func == "add_recipe":
         title = input("title: ")
