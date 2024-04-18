@@ -47,7 +47,7 @@ def get_user(username: str):
     return user_data
 
 
-def get_user_recipes(username):
+def get_user_recipes(username: str):
 
     con = database_connection()
     cur = con.cursor()
@@ -56,6 +56,17 @@ def get_user_recipes(username):
     con.close()
 
     return recipes
+
+
+def get_recipe_by_id(recipe_id: str):
+
+    con = database_connection()
+    cur = con.cursor()
+    recipe = cur.execute(f"SELECT * FROM recipes WHERE id='{recipe_id}'").fetchone()
+    cur.close()
+    con.close()
+
+    return recipe
 
 
 if __name__ == "__main__":
@@ -101,3 +112,6 @@ if __name__ == "__main__":
                 id,
             )
         )
+
+    if func == 'get_recipe_by_id':
+        print(get_recipe_by_id('19a7c874-2201-4045-bd21-d8af45533151')[0]) #should output pasta
