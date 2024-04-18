@@ -45,7 +45,7 @@ def add_user(user_values: tuple):
     """
     con = database_connection()
     cur = con.cursor()
-    if get_user(user_values[0]) is not None:
+    if execute_fetchone(get_user_query(user_values[0])) is not None:
         return None
     command = """ INSERT INTO users 
     (username, real_name, image, description, password) 
@@ -64,7 +64,7 @@ def add_recipe(recipe_values: tuple):
     """
     con = database_connection()
     cur = con.cursor()
-    if get_user(recipe_values[1]) is None:
+    if execute_fetchone(get_user_query(recipe_values[1])) is None:
         return None
     command = """ INSERT INTO recipes 
     (title, owner, time, ingredients, amount, unit, image, tags, description, id)
