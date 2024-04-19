@@ -8,10 +8,10 @@
 <input name="filter" type="text" placeholder='filter'/>
 <button hx-get="/filter_card" hx-target="#filters" hx-include="previous input" hx-swap="beforeend">Add Filter</button>
 <br>
-<form id = "filter_form" hx-get = "/recipes" hx-target="#recipes" hx-include="#username" >
+<form id = "filter_form" hx-get = "/recipes" hx-target="#recipes" >
 <ul name = "filters" id = "filters">
 </ul>
 <button type="submit">GET RECIPIES</button>
 </form>
-<div id = "recipes"></div>
+<div id = "recipes" hx-get="/recipes" hx-trigger="load"></div>
 

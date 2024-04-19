@@ -70,7 +70,7 @@ def add_recipe(recipe_values: tuple):
     con = database_connection()
     cur = con.cursor()
     if execute_fetchone(get_user_query(recipe_values[1])) is None:
-        return None
+        return False
     command = """ INSERT INTO recipes 
     (title, owner, time, ingredients, amount, unit, image, tags, description, id, date)
     VALUES
@@ -79,6 +79,7 @@ def add_recipe(recipe_values: tuple):
     con.commit()
     cur.close()
     con.close()
+    return True
 
 
 def get_user_query(username: str):

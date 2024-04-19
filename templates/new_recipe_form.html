@@ -3,11 +3,33 @@
 
 <script src="https://unpkg.com/htmx.org@1.9.11"></script>
 
-<form hx-post="/create_recipe" hx-target="this" hx-swap="outerHTML">
-  <input type="text" name = "title" placeholder = "username"/>
-  <input type="text" name = "" placeholder = "Real Name"/>
-  <input type="file" name = "image" placeholder = "Profile Picture"/>
-  <input type="text" name = "description" placeholder = "Description"/>
-  <input type = "password" name = "password" placeholder = "Password"/>
-  <button type="submit"> Sign Up </button>
+<datalist id = "unit_list">
+  <option value = "ml">
+  <option value = "dl">
+  <option value = "l">
+  <option value = "g">
+  <option value = "kg">
+  <option value = "cup">
+  <option value = "lb">
+  <option value = "tsp">
+  <option value = "tbsp">
+</datalist>
+
+
+<input type = "text" placeholder = "ingredient" name="ingredient" id="ingredient"/>
+<input type = "text" placeholder = "amount" name = "amount" id="amount"/>
+<input list = "unit_list" placeholder = "unit" name = "unit" id="unit" />
+<button hx-get="/ingredient_card" hx-include="#unit, #amount, #ingredient" hx-target="#ingredient_list" hx-swap="beforeend">Add ingredient</button>
+<input type = "text" placeholder = "tag" name = "tag" id = "tag" />
+<button hx-get = "/tag_card" hx-include="#tag" hx-target="#tag_list" hx-swap="beforeend">Add tag</button>
+<form method="post">
+  <input type="text" name = "title" placeholder = "title"/>
+  <input type="number" name = "time" placeholder = "30"/>
+  <input type="file" name = "image" placeholder = "Image"/>
+  <ul id = "ingredient_list">
+  </ul>
+  <ul id = "tag_list">
+  </ul>
+  <textarea name = "recipe" placeholder = "recipe"></textarea>
+  <button type="submit"> create_recipe </button>
 </form>

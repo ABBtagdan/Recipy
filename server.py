@@ -54,36 +54,37 @@ def log_in():
 
 @app.route("/create_recipe/", methods=["GET", "POST"])
 def create_recipe():
-    if request.method == "GET":
-        return render_template("new_recipe_form.html")
-    elif request.method == "POST":
+    if session["logged_in_user"] is None:
+        return redirect(url_for("log_in"))
+    if request.method == "POST":
         form = request.form
+        uuid_str = str(uuid.uuid4())
         new_recipe = (
             form["title"],
-            form["owner"],
+            session["logged_in_user"],
             form["time"],
             form["ingredients"],
-            form["amount"],
-            form["unit"],
+            form["amounts"],
+            form["units"],
             form["image"],
             form["tags"],
-            form["description"],
-            str(uuid.uuid4()),
+            form["recipe"],
+            uuid_str,
             datetime.now(),
         )
         if tools.add_recipe(new_recipe):
-            return "<p>Succesfully added recipe</p><a href = '/'>Return to home</a>"
-        return (
-            "<p>Couldn't create recipe.</p> <a href = '/create_user/'>Try again?</a> "
-        )
+            return redirect("/")
+    return render_template("new_recipe_form.html")
 
 
 @app.route("/recipes/", methods=["GET"])
 def get_recipies():
-    x = data_loader.load("./recipes/" + request.args["user"] + ".json")
+    user = session["logged_in_user"]
+    if user is None:
+        return ""
     filter = request.args.getlist("filter")
-    x = tools.filter(x, filter)
-    return render_template("recipes.html", recipes=x)
+    recipes = tools.execute_fetchall(tools.get_user_recipes_query(user))
+    return render_template("recipes.html", recipes=recipes)
 
 
 @app.route("/filter_card/", methods=["GET", "DELETE"])
@@ -92,6 +93,29 @@ def filter_card():
         filter: str = request.args["filter"]
         filter = filter.strip()
         return f'<li hx-trigger="click" hx-target="this" hx-delete="/filter_card" hx-swap="outerHTML"><input type="hidden" name="filter" value="{escape(filter)}"/>{escape(filter)}</li>'
+    return ""
+
+
+@app.route("/ingredient_card/", methods=["GET", "DELETE"])
+def ingredient_card():
+    if request.method == "GET":
+        ingredient = request.args["ingredient"].strip()
+        amount = request.args["amount"].strip()
+        unit = request.args["unit"].strip()
+        return f"""<li hx-trigger='click' hx-target="this" hx-delete="/ingredient_card" hx-swap="outerHTML">
+            <input type="hidden" name = "amounts" value="{escape(amount)}">
+            <input type="hidden" name = "ingredients" value="{escape(ingredient)}">
+            <input type="hidden" name = "units" value="{escape(unit)}">
+            <p>{escape(ingredient)} - {escape(amount)} {escape(unit)}</p>
+        </li>    
+        """
+
+
+@app.route("/tag_card", methods=["GET", "DELETE"])
+def tag_card():
+    if request.method == "GET":
+        tag = request.args["tag"].strip()
+        return f'<li hx-trigger="click" hx-target="this" hx-delete="/tag_card" hx-swap="outerHTML"><input type="hidden" name="tags" value="{escape(tag)}"/>{escape(tag)}</li>'
     return ""
 
 
