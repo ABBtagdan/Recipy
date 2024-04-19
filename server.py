@@ -77,14 +77,19 @@ def create_recipe():
     return render_template("new_recipe_form.html")
 
 
+@app.route("/recipes/<id>")
 @app.route("/recipes/", methods=["GET"])
-def get_recipies():
-    user = session["logged_in_user"]
-    if user is None:
-        return ""
-    filter = request.args.getlist("filter")
-    recipes = tools.execute_fetchall(tools.get_user_recipes_query(user))
-    return render_template("recipes.html", recipes=recipes)
+def get_recipies(id=None):
+    if id is None:
+        user = session["logged_in_user"]
+        if user is None:
+            return ""
+        filter = request.args.getlist("filter")
+        recipes = tools.execute_fetchall(tools.get_user_recipes_query(user))
+        return render_template("recipes.html", recipes=recipes)
+    else:
+        recipe = tools.execute_fetchone(tools.get_recipe_by_id_query(id))
+        return str(recipe)
 
 
 @app.route("/filter_card/", methods=["GET", "DELETE"])
