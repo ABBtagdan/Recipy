@@ -1,12 +1,13 @@
 import uuid
 import sqlite3
 
-    # new idea:
-    # execute_fetchmany(user_recipes_query("tagdan") + order_by_query("date"))
+# new idea:
+# execute_fetchmany(user_recipes_query("tagdan") + order_by_query("date"))
 
 
 def database_connection():
     return sqlite3.connect("recipy.db")
+
 
 def execute_fetchone(query: str):
     con = database_connection()
@@ -17,6 +18,7 @@ def execute_fetchone(query: str):
 
     return res
 
+
 def execute_fetchall(query: str):
     con = database_connection()
     cur = con.cursor()
@@ -25,6 +27,7 @@ def execute_fetchall(query: str):
     con.close()
 
     return res
+
 
 def execute_fetchmany(query: str, n: int):
     con = database_connection()
@@ -54,22 +57,24 @@ def add_user(user_values: tuple):
     con.commit()
     cur.close()
     con.close()
+    return True
+
 
 def add_recipe(recipe_values: tuple):
     """
     Function for adding recipe
 
     recipe_values is a tuple with the following values:
-    (title: String, owner: String, time: int, ingredients: String (json), amount: String (json), unit: String (json), image: blob, tags: String (json), description: String, id: String (uuid))
+    (title: String, owner: String, time: int, ingredients: String (json), amount: String (json), unit: String (json), image: blob, tags: String (json), description: String, id: String (uuid), date: date)
     """
     con = database_connection()
     cur = con.cursor()
     if execute_fetchone(get_user_query(recipe_values[1])) is None:
         return None
     command = """ INSERT INTO recipes 
-    (title, owner, time, ingredients, amount, unit, image, tags, description, id)
+    (title, owner, time, ingredients, amount, unit, image, tags, description, id, date)
     VALUES
-    (?,?,?,?,?,?,?,?,?,?)"""
+    (?,?,?,?,?,?,?,?,?,?, ?)"""
     cur.execute(command, recipe_values)
     con.commit()
     cur.close()
@@ -77,16 +82,20 @@ def add_recipe(recipe_values: tuple):
 
 
 def get_user_query(username: str):
-    return f"SELECT * FROM users WHERE username='{username}'" # use fetch one
+    return f"SELECT * FROM users WHERE username='{username}'"  # use fetch one
+
 
 def get_user_recipes_query(username: str):
-    return f"SELECT * FROM recipes WHERE owner='{username}'" # use fetch all
+    return f"SELECT * FROM recipes WHERE owner='{username}'"  # use fetch all
+
 
 def get_recipe_by_id_query(recipe_id: str):
-    return f"SELECT * FROM recipes WHERE id='{recipe_id}'" # use fetch one
+    return f"SELECT * FROM recipes WHERE id='{recipe_id}'"  # use fetch one
+
 
 def get_all_recipes_query():
-    return f"SELECT * FROM recipes" # use fetch many to get n recipes
+    return f"SELECT * FROM recipes"  # use fetch many to get n recipes
+
 
 if __name__ == "__main__":
     print("tests!")
@@ -100,41 +109,58 @@ if __name__ == "__main__":
         password = input("password: ")
         add_user((username, real_name, image, description, password))
 
-    if func == "add_recipe":
-        title = input("title: ")
-        owner = input("owner: ")
-        time = int(input("time: "))
-        ingredients = input("ingredients: ")
-        amount = input("amount: ")
-        unit = input("unit: ")
-        image = open(input("image (filepath): "), "rb").read()
-        tags = input("tags: ")
-        description = input("description: ")
-        id = str(uuid.uuid4())
-        add_recipe(
-            (
-                title,
-                owner,
-                time,
-                ingredients,
-                amount,
-                unit,
-                image,
-                tags,
-                description,
-                id,
+        if func == "add_recipe":
+            title = input("title: ")
+            owner = input("owner: ")
+            time = int(input("time: "))
+            ingredients = input("ingredients: ")
+            amount = input("amount: ")
+            unit = input("unit: ")
+            image = open(input("image (filepath): "), "rb").read()
+            tags = input("tags: ")
+            description = input("description: ")
+            id = str(uuid.uuid4())
+            add_recipe(
+                (
+                    title,
+                    owner,
+                    time,
+                    ingredients,
+                    amount,
+                    unit,
+                    image,
+                    tags,
+                    description,
+                    id,
+                )
             )
+
+    if func == "get_user":
+        print(execute_fetchone(get_user_query(input("username: "))))
+
+    if func == "get_user_recipes":
+        print(
+            [
+                item[0]
+                for item in execute_fetchall(
+                    get_user_recipes_query(input("username: "))
+                )
+            ]
         )
 
+    if func == "get_recipe_by_id":
+        print(
+            execute_fetchone(
+                get_recipe_by_id_query("19a7c874-2201-4045-bd21-d8af45533151")
+            )[0]
+        )  # should output pasta
 
-    if func == 'get_user':
-        print(execute_fetchone(get_user_query(input('username: '))))
-
-    if func == 'get_user_recipes':
-        print([item[0] for item in execute_fetchall(get_user_recipes_query(input('username: ')))])
-
-    if func == 'get_recipe_by_id':
-        print(execute_fetchone(get_recipe_by_id_query('19a7c874-2201-4045-bd21-d8af45533151'))[0]) #should output pasta
-
-    if func == 'get_n_recipes':
-        print([item[0] for item in execute_fetchmany(get_all_recipes_query(), int(input('amount of recipes: ')))])
+    if func == "get_n_recipes":
+        print(
+            [
+                item[0]
+                for item in execute_fetchmany(
+                    get_all_recipes_query(), int(input("amount of recipes: "))
+                )
+            ]
+        )
