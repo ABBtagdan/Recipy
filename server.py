@@ -16,7 +16,8 @@ def create_user():
     if request.method == "GET":
         return render_template("new_user_form.html")
     elif request.method == "POST":
-        print(request.args, request.files, request.form)
+        print(request.form)
+
         return "<p>Succesfully added user</p><a href = '/'>Return to home</a>"
 
 
