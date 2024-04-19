@@ -16,7 +16,7 @@ def add_user(user_values: tuple):
     con = database_connection()
     cur = con.cursor()
     if get_user(user_values[0]) is not None:
-        return None
+        return False
     command = """ INSERT INTO users 
     (username, real_name, image, description, password) 
     VALUES (?, ?, ?, ?, ?)"""
@@ -24,6 +24,7 @@ def add_user(user_values: tuple):
     con.commit()
     cur.close()
     con.close()
+    return True
 
 
 def add_recipe(recipe_values: tuple):
