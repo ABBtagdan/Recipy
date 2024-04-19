@@ -16,13 +16,17 @@ def create_user():
     if request.method == "GET":
         return render_template("new_user_form.html")
 
-
+@app.route("/recipes/<id>")
 @app.route("/recipes/", methods=["GET"])
-def get_recipies():
-    x = data_loader.load("./recipes/" + request.args["user"] + ".json")
-    filter = request.args.getlist("filter")
-    x = tools.filter(x, filter)
-    return render_template("recipes.html", recipes=x)
+def get_recipies(id=None):
+    if id is None:
+        x = data_loader.load("./recipes/" + request.args["user"] + ".json")
+        filter = request.args.getlist("filter")
+        x = tools.filter(x, filter)
+        return render_template("recipes.html", recipes=x)
+    else:
+        recipe = tools.execute_fetchone(tools.get_recipe_by_id_query(id))
+        return str(recipe)
 
 
 @app.route("/filter_card", methods=["GET", "DELETE"])
@@ -32,6 +36,8 @@ def filter_card():
         filter = filter.strip()
         return f'<li hx-trigger="click" hx-target="this" hx-delete="/filter_card" hx-swap="outerHTML"><input type="hidden" name="filter" value="{escape(filter)}"/>{escape(filter)}</li>'
     return ""
+
+
 
 
 if __name__ == "__main__":
