@@ -1,3 +1,4 @@
 recipes/
 __pycache__/
 /config.py
+flask_session/
