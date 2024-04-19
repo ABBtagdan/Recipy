@@ -1,9 +1,39 @@
 import uuid
 import sqlite3
 
+    # new idea:
+    # execute_fetchmany(user_recipes_query("tagdan") + order_by_query("date"))
+
 
 def database_connection():
     return sqlite3.connect("recipy.db")
+
+def execute_fetchone(query: str):
+    con = database_connection()
+    cur = con.cursor()
+    res = cur.execute(query).fetchone()
+    cur.close()
+    con.close()
+
+    return res
+
+def execute_fetchall(query: str):
+    con = database_connection()
+    cur = con.cursor()
+    res = cur.execute(query).fetchall()
+    cur.close()
+    con.close()
+
+    return res
+
+def execute_fetchmany(query: str, n: int):
+    con = database_connection()
+    cur = con.cursor()
+    res = cur.execute(query).fetchmany(n)
+    cur.close()
+    con.close()
+
+    return res
 
 
 def add_user(user_values: tuple):
@@ -15,8 +45,8 @@ def add_user(user_values: tuple):
     """
     con = database_connection()
     cur = con.cursor()
-    if get_user(user_values[0]) is not None:
-        return False
+    if execute_fetchone(get_user_query(user_values[0])) is not None:
+        return None
     command = """ INSERT INTO users 
     (username, real_name, image, description, password) 
     VALUES (?, ?, ?, ?, ?)"""
@@ -25,7 +55,6 @@ def add_user(user_values: tuple):
     cur.close()
     con.close()
     return True
-
 
 def add_recipe(recipe_values: tuple):
     """
@@ -36,7 +65,7 @@ def add_recipe(recipe_values: tuple):
     """
     con = database_connection()
     cur = con.cursor()
-    if get_user(recipe_values[1]) is None:
+    if execute_fetchone(get_user_query(recipe_values[1])) is None:
         return None
     command = """ INSERT INTO recipes 
     (title, owner, time, ingredients, amount, unit, image, tags, description, id, date)
@@ -48,28 +77,17 @@ def add_recipe(recipe_values: tuple):
     con.close()
 
 
-def get_user(username: str):
+def get_user_query(username: str):
+    return f"SELECT * FROM users WHERE username='{username}'" # use fetch one
 
-    con = database_connection()
-    cur = con.cursor()
-    res = cur.execute(f"SELECT * FROM users WHERE username='{username}'")
-    user_data = res.fetchone()
-    cur.close()
-    con.close()
+def get_user_recipes_query(username: str):
+    return f"SELECT * FROM recipes WHERE owner='{username}'" # use fetch all
 
-    return user_data
+def get_recipe_by_id_query(recipe_id: str):
+    return f"SELECT * FROM recipes WHERE id='{recipe_id}'" # use fetch one
 
-
-def get_user_recipes(username):
-
-    con = database_connection()
-    cur = con.cursor()
-    recipes = cur.execute(f"SELECT * FROM recipes WHERE owner='{username}'").fetchall()
-    cur.close()
-    con.close()
-
-    return recipes
-
+def get_all_recipes_query():
+    return f"SELECT * FROM recipes" # use fetch many to get n recipes
 
 if __name__ == "__main__":
     print("tests!")
@@ -83,13 +101,7 @@ if __name__ == "__main__":
         password = input("password: ")
         add_user((username, real_name, image, description, password))
 
-    if func == "get_user":
-        print(get_user(input("username: ")))
-
-    if func == "get_user_recipes":
-        print([item[0] for item in get_user_recipes(input("username: "))])
-
-    if func == "add_recipe":
+        if func == "add_recipe":
         title = input("title: ")
         owner = input("owner: ")
         time = int(input("time: "))
@@ -114,3 +126,16 @@ if __name__ == "__main__":
                 id,
             )
         )
+
+
+    if func == 'get_user':
+        print(execute_fetchone(get_user_query(input('username: '))))
+
+    if func == 'get_user_recipes':
+        print([item[0] for item in execute_fetchall(get_user_recipes_query(input('username: ')))])
+
+    if func == 'get_recipe_by_id':
+        print(execute_fetchone(get_recipe_by_id_query('19a7c874-2201-4045-bd21-d8af45533151'))[0]) #should output pasta
+
+    if func == 'get_n_recipes':
+        print([item[0] for item in execute_fetchmany(get_all_recipes_query(), int(input('amount of recipes: ')))])
