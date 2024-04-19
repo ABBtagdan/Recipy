@@ -1,11 +1,16 @@
 from flask import Flask, request, render_template, session, url_for, redirect
 from markupsafe import escape
+from datetime import datetime
+from flask_session import Session  # noqa: syntax
 import data_loader
 import tools
 import uuid
-from datetime import datetime
 
 app = Flask(__name__)
+
+app.config.from_pyfile("config.py")
+
+Session(app)
 
 
 @app.route("/")
@@ -33,7 +38,9 @@ def create_user():
 @app.route("/log_in/", methods=["GET", "POST"])
 def log_in():
     if request.method == "POST":
-        user_password = tools.get_user(request.form["username"])[4]
+        user_password = tools.execute_fetchone(
+            tools.get_user_query(request.form["username"])
+        )[4]
         if request.form["password"] == user_password:
             session["logged_in_user"] = request.form["username"]
             return redirect(url_for("index"))

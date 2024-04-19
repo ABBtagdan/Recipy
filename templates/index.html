@@ -1,8 +1,11 @@
 <script src="https://unpkg.com/htmx.org@1.9.11"></script>
 
-
-<input name="user" type="text" placeholder="your username" id="username">
-<input name="filter" type="text" />
+{% if session['logged_in_user'] %}
+  <h1>Logged in as {{ session['logged_in_user'] }}</h1>
+{% else %}
+  <a href='/log_in'>Log in</a>
+{% endif %}
+<input name="filter" type="text" placeholder='filter'/>
 <button hx-get="/filter_card" hx-target="#filters" hx-include="previous input" hx-swap="beforeend">Add Filter</button>
 <br>
 <form id = "filter_form" hx-get = "/recipes" hx-target="#recipes" hx-include="#username" >
