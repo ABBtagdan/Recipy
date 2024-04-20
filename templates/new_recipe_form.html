@@ -22,7 +22,7 @@
 <button hx-get="/ingredient_card" hx-include="#unit, #amount, #ingredient" hx-target="#ingredient_list" hx-swap="beforeend">Add ingredient</button>
 <input type = "text" placeholder = "tag" name = "tag" id = "tag" />
 <button hx-get = "/tag_card" hx-include="#tag" hx-target="#tag_list" hx-swap="beforeend">Add tag</button>
-<form method="post">
+<form method="post" enctype="multipart/form-data">
   <input type="text" name = "title" placeholder = "title"/>
   <input type="number" name = "time" placeholder = "30"/>
   <input type="file" name = "image" placeholder = "Image"/>

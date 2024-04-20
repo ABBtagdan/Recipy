@@ -1,6 +1,6 @@
 <!doctype html>
 <ul id = "recipes">
 {% for recipe in recipes%}
-  <li><a href="/">{{recipe[0]}}</a><img style="width:100px; height:100px" src="{{recipe[6]}}"/></li>
+  <li><a href="/recipes/{{recipe[9]}}">{{recipe[0]}}</a><img style="width:100px; height:100px" src="{{recipe[6]}}"/></li>
 {% endfor %}
 </ul>

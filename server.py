@@ -2,7 +2,9 @@ from flask import Flask, request, render_template, session, url_for, redirect
 from markupsafe import escape
 from datetime import datetime
 from flask_session import Session  # noqa: syntax
-import data_loader
+from werkzeug.utils import secure_filename
+from flask import send_from_directory
+import os
 import tools
 import uuid
 
@@ -11,6 +13,8 @@ app = Flask(__name__)
 app.config.from_pyfile("config.py")
 
 Session(app)
+
+IMAGE_FOLDER = "/images"
 
 
 @app.route("/")
@@ -22,10 +26,13 @@ def index():
 def create_user():
     if request.method == "POST":
         form = request.form
+        file = request.files["image"]
+        file_name = IMAGE_FOLDER + "/" + secure_filename(uuid.uuid4().hex)
+        file.save(os.path.abspath("." + file_name))
         new_user = (
             form["username"],
             form["real_name"],
-            form["image"],
+            file_name,
             form["description"],
             form["password"],
         )
@@ -52,12 +59,25 @@ def log_in():
     """
 
 
+@app.route("/images/<filename>")
+def images(filename):
+    return send_from_directory(
+        os.path.abspath("." + IMAGE_FOLDER),
+        filename,
+        as_attachment=False,
+        mimetype="image",
+    )
+
+
 @app.route("/create_recipe/", methods=["GET", "POST"])
 def create_recipe():
     if session["logged_in_user"] is None:
         return redirect(url_for("log_in"))
     if request.method == "POST":
         form = request.form
+        file = request.files["image"]
+        file_name = IMAGE_FOLDER + "/" + secure_filename(uuid.uuid4().hex)
+        file.save(os.path.abspath("." + file_name))
         uuid_str = str(uuid.uuid4())
         new_recipe = (
             form["title"],
@@ -66,7 +86,7 @@ def create_recipe():
             form["ingredients"],
             form["amounts"],
             form["units"],
-            form["image"],
+            file_name,
             form["tags"],
             form["recipe"],
             uuid_str,
@@ -84,7 +104,7 @@ def get_recipies(id=None):
         user = session["logged_in_user"]
         if user is None:
             return ""
-        filter = request.args.getlist("filter")
+        request.args.getlist("filter")
         recipes = tools.execute_fetchall(tools.get_user_recipes_query(user))
         return render_template("recipes.html", recipes=recipes)
     else:
