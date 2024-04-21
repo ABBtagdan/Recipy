@@ -74,7 +74,7 @@ def add_recipe(recipe_values: tuple):
     command = """ INSERT INTO recipes 
     (title, owner, time, ingredients, amount, unit, image, tags, description, id, date)
     VALUES
-    (?,?,?,?,?,?,?,?,?,?, ?)"""
+    (?,?,?,?,?,?,?,?,?,?,?)"""
     cur.execute(command, recipe_values)
     con.commit()
     cur.close()
@@ -82,16 +82,38 @@ def add_recipe(recipe_values: tuple):
     return True
 
 
+def delete_recipe(recipe_id: str, username: str):
+    con = database_connection()
+    cur = con.cursor()
+    command = """
+    DELETE FROM recipes WHERE id = ? AND owner = ?
+    """
+    cur.execute(
+        command,
+        (
+            recipe_id,
+            username,
+        ),
+    )
+    con.commit()
+    cur.close()
+    con.close()
+
+
+def safe(parameter: str) -> str:
+    return parameter.replace("'", "''")
+
+
 def get_user_query(username: str):
-    return f"SELECT * FROM users WHERE username='{username}'"  # use fetch one
+    return f"SELECT * FROM users WHERE username='{safe(username)}'"  # use fetch one
 
 
 def get_user_recipes_query(username: str):
-    return f"SELECT * FROM recipes WHERE owner='{username}'"  # use fetch all
+    return f"SELECT * FROM recipes WHERE owner='{safe(username)}'"  # use fetch all
 
 
 def get_recipe_by_id_query(recipe_id: str):
-    return f"SELECT * FROM recipes WHERE id='{recipe_id}'"  # use fetch one
+    return f"SELECT * FROM recipes WHERE id='{safe(recipe_id)}'"  # use fetch one
 
 
 def get_all_recipes_query():

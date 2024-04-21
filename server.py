@@ -4,6 +4,7 @@ from datetime import datetime
 from flask_session import Session  # noqa: syntax
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
+import json
 import os
 import tools
 import uuid
@@ -79,15 +80,16 @@ def create_recipe():
         file_name = IMAGE_FOLDER + "/" + secure_filename(uuid.uuid4().hex)
         file.save(os.path.abspath("." + file_name))
         uuid_str = str(uuid.uuid4())
+        print(form.getlist("amounts"))
         new_recipe = (
             form["title"],
             session["logged_in_user"],
             form["time"],
-            form["ingredients"],
-            form["amounts"],
-            form["units"],
+            json.dumps(form.getlist("ingredients")),
+            json.dumps(form.getlist("amounts")),
+            json.dumps(form.getlist("units")),
             file_name,
-            form["tags"],
+            json.dumps(form.getlist("tags")),
             form["recipe"],
             uuid_str,
             datetime.now(),
@@ -97,9 +99,9 @@ def create_recipe():
     return render_template("new_recipe_form.html")
 
 
-@app.route("/recipes/<id>")
+@app.route("/recipes/<id>", methods=["GET", "DELETE"])
 @app.route("/recipes/", methods=["GET"])
-def get_recipies(id=None):
+def get_recipes(id=None):
     if id is None:
         user = session["logged_in_user"]
         if user is None:
@@ -108,6 +110,10 @@ def get_recipies(id=None):
         recipes = tools.execute_fetchall(tools.get_user_recipes_query(user))
         return render_template("recipes.html", recipes=recipes)
     else:
+        if request.method == "DELETE":
+            tools.delete_recipe(id, session["logged_in_user"])
+            return redirect("/")
+
         recipe = tools.execute_fetchone(tools.get_recipe_by_id_query(id))
         return str(recipe)
 
@@ -134,6 +140,7 @@ def ingredient_card():
             <p>{escape(ingredient)} - {escape(amount)} {escape(unit)}</p>
         </li>    
         """
+    return ""
 
 
 @app.route("/tag_card", methods=["GET", "DELETE"])
